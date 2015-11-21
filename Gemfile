@@ -14,7 +14,6 @@ gem 'sinatra'
 gem 'sinatra-activerecord'
 gem 'sinatra-contrib'
 gem 'tux'
-gem 'pry'
 
 group :development do
    gem 'pry'
