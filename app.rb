@@ -1,4 +1,5 @@
 require 'sinatra'
+require "sinatra/json"
 require 'aescrypt'
 require 'dotenv'
 Dotenv.load
@@ -15,36 +16,30 @@ post '/sign_up' do
 
       encrypted_password = params['password'].gsub(" ","+").concat("\n")
       decrypted_password = AESCrypt.decrypt(encrypted_password, ENV['AuthPassword'])
-      
+
       user = User.new(email: params[:email], password: decrypted_password, password_confirmation: decrypted_password)
 
       if user.save
-        render(
-                status: 200,
-                json: {
-                  success: true,
-                  data: {
-                    id: user.id,
-                    email: user.email
-                  }
-                    
-                }
-              ) and return
+        json(:status => 200,
+             :json => {
+                :success => true,
+                :data => {
+                  :id => user.id,
+                  :email => user.email
+              }
+            })
       else
-        render(
-                status: 400,
-                json: {
-                  success: false,
-                  info: user.errors.full_messages.first
-                }
-              ) and return
+        json(:status => 400,
+             :json => {
+              :success => false,
+              :info => user.errors.full_messages.first
+            }) 
       end
     end
   end
 end
 
 post '/sign_in' do
-  
   if request.post?
     if params[:email].present? && params[:password].present? 
 
@@ -55,24 +50,20 @@ post '/sign_in' do
         decrypted_password = AESCrypt.decrypt(encrypted_password, ENV['AuthPassword'])
 
         if user.authenticate(decrypted_password) == user  
-          render :json => user.to_json, :status => 200
+          json(:json => user.to_json, :status => 200)
         else
-          render(
-                status: 400,
-                json: {
-                  success: false,
-                  info: "Incorrect password"
-                }
-              ) and return
+          json(:status => 400,
+               :json => {
+                :success => false,
+                :info => "Incorrect password"
+              })
         end      
       else
-        render(
-                status: 400,
-                json: {
-                  success: false,
-                  info: "User not found"
-                }
-              ) and return
+        json(:status => 400,
+             :json => {
+              :success => false,
+              :info => "User not found"
+            }) 
       end
     end
   end
@@ -89,15 +80,13 @@ post '/data' do
   image = Image.new(user_id: user.id, word: params[:image_name], file_name: file_name)
 
   if image.save
-    render(status: 200)
+    json(:status => 200)
   else
-    render(
-          status: 200,
-          json: {
-            success: false,
-            info: "You have not uploaded and images."
-          }
-        ) and return
+    json(:status => 200,
+         :json => {
+          :success => false,
+          :info => "You have not uploaded and images."
+        })
   end
 end
 
@@ -123,24 +112,20 @@ get '/select_image' do
   s3 = S3Coordinator.new
 
   if user.present? && user.images.present?
-    render(
-            status: 200,
-            json: {
-              success: true,
-              data: {
-                s3_url: s3.fetch_image_url(image.file_name),
-                word: image.word
-              }
-            }
-          ) and return
-  else
-    render(
-          status: 400,
-          json: {
-            success: false,
-            info: "You have not uploaded and images."
+    json(:status => 200,
+         :json => {
+          :success => true,
+          :data => {
+            :s3_url => s3.fetch_image_url(image.file_name),
+            :word => image.word
           }
-        ) and return
+        })
+  else
+    json(:status => 400,
+         :json => {
+          :success => false,
+          :info => "You have not uploaded and images."
+        })
   end
 end
 
@@ -148,23 +133,19 @@ get '/images' do
   user = User.find_by(email: params[:email])
 
   if user.present? && user.images.present?
-    render(
-            status: 200,
-            json: {
-              success: true,
-              data: {
-                images: user.images.not_hidden
-              }
+    json(:status => 200,
+         :json => {
+            :success => true,
+            :data => {
+              :images => user.images.not_hidden
             }
-          ) and return
+          })
   else
-    render(
-          status: 400,
-          json: {
-            success: false,
-            info: "You have not uploaded and images."
-          }
-        ) and return
+    json(:status => 400,
+         :json => {
+          :success => false,
+          :info => "You have not uploaded and images."
+        })
   end
 end
 
@@ -173,20 +154,16 @@ post '/edit_image' do
   image.word = params[:word]
   
   if image.save
-    render(
-            status: 200,
-            json: {
-              success: true
-            }
-          ) and return
+    json(:status => 200,
+         :json => {
+          :success => true
+        })
   else
-    render(
-          status: 200,
-          json: {
-            success: false,
-            info: image.errors.first
-          }
-        ) and return
+    json(:status => 200,
+         :json => {
+          :success => false,
+          :info => image.errors.first
+        })
   end
 end
 
@@ -196,22 +173,18 @@ post '/hide_image' do
   image.hidden = true
   
   if image.save
-    render(
-            status: 200,
-            json: {
-              success: true,
-              data: {
-                images: user.images.not_hidden
-              }
-            }
-          ) and return
-  else
-    render(
-          status: 200,
-          json: {
-            success: false,
-            info: image.errors.first
+    json(:status => 200,
+         :json => {
+          :success => true,
+          :data => {
+            :images => user.images.not_hidden
           }
-        ) and return
+        })
+  else
+    json(:status => 200,
+         :json => {
+          :success => false,
+          :info => image.errors.first
+        })
   end
 end
