@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'aescrypt'
-require 'pry'
 require 'dotenv'
 Dotenv.load
 require 'sinatra/activerecord'

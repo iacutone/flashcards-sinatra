@@ -1,1 +1,1 @@
-web: bundle exec puma -t 5:12
+web: bundle exec ruby app.rb -p $PORT -s Puma
