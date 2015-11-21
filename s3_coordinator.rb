@@ -1,3 +1,5 @@
+require 'aws-sdk'
+
 class S3Coordinator
   attr_reader :bucket
 

@@ -1,14 +1,18 @@
 require 'sinatra'
+require 'aescrypt'
+require 'pry'
+require 'dotenv'
+Dotenv.load
 require 'sinatra/activerecord'
+require 'mini_magick'
 require './user'
 require './image'
 require './s3_coordinator'
 require './environments'
 
-post 'sign_up' do
-
+post '/sign_up' do
   if request.post?
-    if params && params[:email] && params[:password]
+    if params.present? && params[:email].present? && params[:password].present?
 
       encrypted_password = params['password'].gsub(" ","+").concat("\n")
       decrypted_password = AESCrypt.decrypt(encrypted_password, ENV['AuthPassword'])
@@ -40,7 +44,7 @@ post 'sign_up' do
   end
 end
 
-post 'sign_in' do
+post '/sign_in' do
   
   if request.post?
     if params[:email].present? && params[:password].present? 
@@ -75,7 +79,7 @@ post 'sign_in' do
   end
 end
 
-post 'data' do
+post '/data' do
   s3        = S3Coordinator.new
   user      = User.find_by(email: params[:email])
   file_name = "#{user.email} #{Time.now.to_s(:number)}.jpg"
@@ -98,7 +102,7 @@ post 'data' do
   end
 end
 
-get 'select_image' do
+get '/select_image' do
   user        = User.find_by(email: params[:email])
   user_count  = user.counter
   image_count = user.images.not_hidden.size
@@ -141,7 +145,7 @@ get 'select_image' do
   end
 end
 
-get 'images' do
+get '/images' do
   user = User.find_by(email: params[:email])
 
   if user.present? && user.images.present?
@@ -165,7 +169,7 @@ get 'images' do
   end
 end
 
-post 'edit_image' do
+post '/edit_image' do
   image = Image.find(params[:image_id])
   image.word = params[:word]
   
@@ -187,7 +191,7 @@ post 'edit_image' do
   end
 end
 
-post 'hide_image' do
+post '/hide_image' do
   user  = User.find_by(email: params[:email])
   image = Image.find(params[:image_id])
   image.hidden = true
