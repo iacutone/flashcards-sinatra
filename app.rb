@@ -10,10 +10,6 @@ require './image'
 require './s3_coordinator'
 require './environments'
 
-get '/' do
-  "Image Cards"
-end
-
 post '/sign_up' do
   if request.post?
     if params.present? && params[:email].present? && params[:password].present?

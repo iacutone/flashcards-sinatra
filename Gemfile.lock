@@ -92,7 +92,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord
   aescrypt
   aws-sdk (~> 1.8.1.2)
   bcrypt (~> 3.1.7)

@@ -4,7 +4,7 @@ class Users < ActiveRecord::Migration
       t.string "email"
       t.string "password_digest"
       t.string "token"
-      t.integer "counter"
+      t.integer "counter", default: 0
 
       t.timestamps null: false
     end

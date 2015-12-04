@@ -1,0 +1,5 @@
+development:
+  adapter: postgresql
+  database: flashcards-sinatra_development
+  host: localhost
+  pool: 30
