@@ -1,4 +1,6 @@
 require 'sinatra'
+require "aws/s3"
+require 'pry'
 require "sinatra/json"
 require 'aescrypt'
 require 'dotenv'
@@ -7,8 +9,8 @@ require 'sinatra/activerecord'
 require 'mini_magick'
 require './user'
 require './image'
-require './s3_coordinator'
 require './environments'
+require './s3_coordinator'
 
 post '/sign_up' do
   if request.post?
@@ -73,7 +75,7 @@ post '/data' do
   s3        = S3Coordinator.new
   user      = User.find_by(email: params[:email])
   file_name = "#{user.email} #{Time.now.to_s(:number)}.jpg"
-  image     = MiniMagick::Image.new(params['photo'].tempfile.path)
+  image     = MiniMagick::Image.new(params['photo'][:tempfile].path)
   image.resize "375x375"
   s3_image  = s3.upload_image(image.path, file_name)
 
@@ -91,27 +93,28 @@ post '/data' do
 end
 
 get '/select_image' do
-  user        = User.find_by(email: params[:email])
-  user_count  = user.counter
-  image_count = user.images.not_hidden.size
-  increment   = params[:increment].to_i
-
-  if user_count + increment >= image_count
-    user.counter = 0
-    user.save!
-  elsif user_count + increment < 0
-    user.counter = image_count - 1
-    user.save!
-  else
-    user.counter = user_count + increment
-    user.save!
-  end
-
-  image = user.images[user.counter]
-  
-  s3 = S3Coordinator.new
+  user = User.find_by(email: params[:email])
 
   if user.present? && user.images.present?
+    user_count  = user.counter
+    image_count = user.images.not_hidden.size
+    increment   = params[:increment].to_i
+
+    if user_count + increment >= image_count
+      user.counter = 0
+      user.save!
+    elsif user_count + increment < 0
+      user.counter = image_count - 1
+      user.save!
+    else
+      user.counter = user_count + increment
+      user.save!
+    end
+
+    image = user.images[user.counter]
+    
+    s3 = S3Coordinator.new
+
     json(:status => 200,
          :json => {
           :success => true,
