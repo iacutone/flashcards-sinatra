@@ -23,19 +23,13 @@ post '/sign_up' do
 
       if user.save
         json(:status => 200,
-             :json => {
-                :success => true,
-                :data => {
-                  :id => user.id,
-                  :email => user.email
-              }
-            })
+             :success => true,
+             :id => user.id,
+             :email => user.email)
       else
         json(:status => 400,
-             :json => {
-              :success => false,
-              :info => user.errors.full_messages.first
-            }) 
+             :success => false,
+             :info => user.errors.full_messages.first) 
       end
     end
   end
@@ -52,20 +46,18 @@ post '/sign_in' do
         decrypted_password = AESCrypt.decrypt(encrypted_password, ENV['AuthPassword'])
 
         if user.authenticate(decrypted_password) == user  
-          json(:json => user.to_json, :status => 200)
+          json(:status => 200,
+               :email => user.email,
+               :id => user.id)
         else
           json(:status => 400,
-               :json => {
-                :success => false,
-                :info => "Incorrect password"
-              })
+               :success => false,
+               :info => "Incorrect password")
         end      
       else
         json(:status => 400,
-             :json => {
-              :success => false,
-              :info => "User not found"
-            }) 
+             :success => false,
+             :info => "User not found") 
       end
     end
   end
@@ -117,19 +109,13 @@ get '/select_image' do
     s3 = S3Coordinator.new
 
     json(:status => 200,
-         :json => {
-          :success => true,
-          :data => {
-            :s3_url => s3.fetch_image_url(image.file_name),
-            :word => image.word
-          }
-        })
+         :success => true,
+         :s3_url => s3.fetch_image_url(image.file_name),
+         :word => image.word)
   else
     json(:status => 400,
-         :json => {
-          :success => false,
-          :info => "You have not uploaded and images."
-        })
+         :success => false,
+         :info => "You have not uploaded and images.")
   end
 end
 
