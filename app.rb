@@ -1,6 +1,6 @@
 require 'sinatra'
 require "aws/s3"
-require 'pry'
+# require 'pry'
 require "sinatra/json"
 require 'aescrypt'
 require 'dotenv'
