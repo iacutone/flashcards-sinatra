@@ -75,6 +75,7 @@ post '/data' do
   s3        = S3Coordinator.new
   user      = User.find_by(email: params[:email])
   file_name = "#{user.email} #{Time.now.to_s(:number)}.jpg"
+  puts params
   image     = MiniMagick::Image.new(params['photo'][:tempfile].path)
   image.resize "375x375"
   s3_image  = s3.upload_image(image.path, file_name)
