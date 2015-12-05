@@ -137,36 +137,29 @@ get '/images' do
 
   if user.present? && user.images.present?
     json(:status => 200,
-         :json => {
-            :success => true,
-            :data => {
-              :images => user.images.not_hidden
-            }
+          :success => true,
+          :data => {
+            :images => user.images.not_hidden
           })
   else
     json(:status => 400,
-         :json => {
-          :success => false,
-          :info => "You have not uploaded and images."
-        })
+         :success => false,
+         :info => "You have not uploaded and images."
+        )
   end
 end
 
 post '/edit_image' do
   image = Image.find(params[:image_id])
   image.word = params[:word]
-  
+
   if image.save
     json(:status => 200,
-         :json => {
-          :success => true
-        })
+         :success => true)
   else
     json(:status => 200,
-         :json => {
-          :success => false,
-          :info => image.errors.first
-        })
+         :success => false,
+         :info => image.errors.first)
   end
 end
 
@@ -177,17 +170,14 @@ post '/hide_image' do
   
   if image.save
     json(:status => 200,
-         :json => {
           :success => true,
           :data => {
             :images => user.images.not_hidden
           }
-        })
+        )
   else
     json(:status => 200,
-         :json => {
-          :success => false,
-          :info => image.errors.first
-        })
+         :success => false,
+         :info => image.errors.first)
   end
 end
