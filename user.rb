@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   before_save :generate_token
 
   def downcase_email
-    self.email.downcase
+    self.email.downcase!
   end
   
   def generate_token
