@@ -67,7 +67,7 @@ post '/data' do
   s3        = S3Coordinator.new
   user      = User.find_by(email: params[:email])
   file_name = "#{user.email} #{Time.now.to_s(:number)}.jpg"
-  puts params
+
   image     = MiniMagick::Image.new(params['photo'][:tempfile].path)
   image.resize "375x375"
   s3_image  = s3.upload_image(image.path, file_name)
@@ -89,6 +89,7 @@ get '/select_image' do
   user = User.find_by(email: params[:email])
 
   if user.present? && user.images.present?
+    puts "User: #{user.id}, #{user.counter}"
     user_count  = user.counter
     image_count = user.images.not_hidden.size
     increment   = params[:increment].to_i
@@ -103,6 +104,9 @@ get '/select_image' do
       user.counter = user_count + increment
       user.save!
     end
+
+    puts "User: #{user.id}, #{user.counter}"
+    puts user.images
 
     image = user.images[user.counter]
     
