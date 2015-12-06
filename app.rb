@@ -86,8 +86,9 @@ post '/data' do
 end
 
 get '/select_image' do
+  puts params
   user = User.find_by(email: params[:email])
-  puts "#{user}"
+  puts "#{user.id}"
   puts "#{user.present?}"
   puts "#{user.images.present?}"
   if user.present? && user.images.present?
