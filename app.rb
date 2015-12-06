@@ -87,7 +87,9 @@ end
 
 get '/select_image' do
   user = User.find_by(email: params[:email])
-
+  puts "#{user}"
+  puts "#{user.present?}"
+  puts "#{user.images.present?}"
   if user.present? && user.images.present?
     puts "User: #{user.id}, #{user.counter}"
     user_count  = user.counter
