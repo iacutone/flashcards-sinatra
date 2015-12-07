@@ -8,12 +8,12 @@ gem 'dotenv'
 gem 'foreman'
 gem 'mini_magick'
 gem 'pg'
-gem 'thin'
 gem 'shotgun'
 gem 'sinatra'
 gem 'sinatra-activerecord'
 gem 'sinatra-contrib'
 gem 'tux'
+gem 'unicorn'
 
 group :development do
    gem 'pry'

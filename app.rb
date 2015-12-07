@@ -12,6 +12,8 @@ require './image'
 require './environments'
 require './s3_coordinator'
 
+# after { ActiveRecord::Base.clear_active_connections }
+
 post '/sign_up' do
   if request.post?
     if params.present? && params[:email].present? && params[:password].present?
@@ -86,13 +88,10 @@ post '/data' do
 end
 
 get '/select_image' do
-  puts params
   user = User.find_by(email: params[:email])
-  puts "#{user.id}"
-  puts "#{user.present?}"
-  puts "#{user.images.present?}"
+
   if user.present? && user.images.present?
-    puts "User: #{user.id}, #{user.counter}"
+
     user_count  = user.counter
     image_count = user.images.not_hidden.size
     increment   = params[:increment].to_i
@@ -107,8 +106,7 @@ get '/select_image' do
       user.counter = user_count + increment
       user.save!
     end
-
-    puts "User: #{user.id}, #{user.counter}"
+    
     puts user.images
 
     image = user.images[user.counter]
